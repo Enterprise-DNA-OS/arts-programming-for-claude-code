@@ -1,8 +1,5 @@
-name: Verify commands
+name: Verify arts programming
 on:
-  # Manual only since 2026-10-18 to save GitHub Actions minutes (Sam). To restore, put back:
-  # push:
-  #   branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -12,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node: [20, 22]
+        node: [22, 24]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +27,7 @@ jobs:
         image: postgres:17
         env:
           POSTGRES_PASSWORD: disposable
-          POSTGRES_DB: rebuild_test
+          POSTGRES_DB: arts_test
         ports: ['5432:5432']
         options: --health-cmd pg_isready --health-interval 5s --health-retries 10
     steps:
@@ -42,4 +39,4 @@ jobs:
       - run: npm ci
       - run: npm test
         env:
-          TEST_DATABASE_URL: postgres://postgres:disposable@localhost:5432/rebuild_test?sslmode=disable
+          ARTS_TEST_POSTGRES_URL: postgres://postgres:disposable@localhost:5432/arts_test?sslmode=disable

@@ -1,13 +1,43 @@
 [
   {
     "name": "week",
-    "title": "This week",
-    "subtitle": "Arts Programming for Claude Code: what needs attention, rendered by npm run view",
+    "title": "Programming office: weekly review",
+    "subtitle": "Private snapshot. All call times are UTC.",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Season decisions",
+        "sql": "select p.code,p.name,p.owner,p.status,(select count(*)::int from sessions s where s.production_id=p.id and s.status<>'cancelled') calls,(select count(*)::int from programme_items i where i.production_id=p.id) works,(select count(*)::int from rights_gaps g where g.production=p.code) rights_gaps,(select count(*)::int from actions a where a.production_id=p.id and a.status='open') open_actions from productions p where p.status<>'closed' order by p.review_due,p.code"
+      },
+      {
+        "title": "Schedule clashes",
+        "sql": "select first_call,second_call,space,first_start,second_start,issue from schedule_clashes order by first_start,first_call"
+      },
+      {
+        "title": "Rights follow-up",
+        "sql": "select code,production,title,performance,starts_at,issue from rights_gaps order by starts_at,code"
+      },
+      {
+        "title": "Actions due",
+        "sql": "select code,production,description,owner,due,overdue from action_register where status='open' order by due,code"
+      }
+    ]
+  },
+  {
+    "name": "rehearsal-board",
+    "title": "Rehearsal and performance calls",
+    "subtitle": "Private snapshot. All call times are UTC.",
+    "sections": [
+      {
+        "title": "Calls",
+        "sql": "select code,production,kind,space,starts_at,ends_at,planned_people,status from call_sheet where status<>'cancelled' order by starts_at,code"
+      },
+      {
+        "title": "Safety evidence missing",
+        "sql": "select code,production,space,kind,starts_at,revision from call_sheet where status<>'cancelled' and not safety_reviewed order by starts_at,code"
+      },
+      {
+        "title": "Capacity exceptions",
+        "sql": "select code,production,space,planned_people,capacity from call_sheet where status<>'cancelled' and planned_people>capacity order by starts_at,code"
       }
     ]
   }

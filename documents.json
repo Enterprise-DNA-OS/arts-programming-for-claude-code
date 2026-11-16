@@ -1,11 +1,55 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
-    "file": "name",
+    "name": "production-brief",
+    "title": "Draft production brief",
+    "for_each": "select id,code from productions order by code",
+    "file": "code",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      {
+        "title": "Production",
+        "layout": "record",
+        "sql": "select code,name,owner,territory,timezone,rights_context,review_due,status from productions where id=$1"
+      },
+      {
+        "title": "Programme and rights evidence",
+        "sql": "select position,title,credit,decision,authority,evidence from repertoire where production_id=$1 order by position"
+      },
+      {
+        "title": "Calls (UTC)",
+        "sql": "select code,kind,space,starts_at,ends_at,status from call_sheet where production_id=$1 order by starts_at"
+      },
+      {
+        "title": "Actions",
+        "sql": "select code,description,owner,due,status,evidence from actions where production_id=$1 order by due"
+      }
+    ]
+  },
+  {
+    "name": "programme-sheet",
+    "title": "Draft programme credits",
+    "for_each": "select id,code from productions order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Credits for human review",
+        "sql": "select position,title,creator,credit,duration_seconds from repertoire where production_id=$1 order by position"
+      }
+    ]
+  },
+  {
+    "name": "safety-handover",
+    "title": "Draft safety and consultation evidence",
+    "for_each": "select id,code from productions order by code",
+    "file": "code",
+    "sections": [
+      {
+        "title": "Calls (UTC)",
+        "sql": "select code,kind,space,starts_at,planned_people,capacity,revision,safety_reviewed from call_sheet where production_id=$1 order by starts_at"
+      },
+      {
+        "title": "Recorded reviews, including superseded versions",
+        "sql": "select s.code,r.session_revision,r.evidence,r.consulted_with,r.actor,r.created_at from safety_reviews r join sessions s on s.id=r.session_id where s.production_id=$1 order by r.created_at"
+      }
     ]
   }
 ]

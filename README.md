@@ -1,115 +1,98 @@
-<h1 align="center">Arts Programming for Claude Code</h1>
+# Arts Programming for Claude Code
 
-<p align="center">
-  <strong>The open-source arts programming desk that is just a database and Claude Code.</strong>
-</p>
+Own the programme office: seasons, repertoire, rehearsal calls, credits, rights evidence and production follow-up. MIT-licensed software from Enterprise DNA. Works with Claude Code, Codex, OpenCode or Cursor.
 
-<p align="center">
-  Created by <a href="https://www.enterprisedna.co"><strong>Enterprise DNA</strong></a>. Free and open source. Works with Claude Code, Codex, OpenCode or Cursor.
-</p>
+| Do it yourself | We customise it | We run it for you |
+|---|---|---|
+| Free source code. Install, map your exports and run it. | Your season rules, credits, paperwork and Artifax records mapped across. [Get your version built](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=artifax). | Installed and operated through Omni by Enterprise DNA. One setup fee, then a retainer. [Book a call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=artifax). |
 
-<!-- three-doors -->
-<table align="center">
-  <tr>
-    <td align="center"><strong>Do it yourself</strong><br/>Clone it, run it, own it. Free, MIT.<br/><a href="#quick-start">Quick start</a></td>
-    <td align="center"><strong>We customise it</strong><br/>Your fields, your rules, your Artifax data brought across.<br/><a href="https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=artifax">Book a call</a></td>
-    <td align="center"><strong>We run it for you</strong><br/>Installed, connected and operated inside Omni. Setup fee, then a retainer.<br/><a href="https://enterprisedna.co/omni/instead-of/artifax?utm_source=github&utm_medium=readme&utm_campaign=artifax">How it works</a></td>
-  </tr>
-</table>
+## What this replaces
 
-<p align="center">
-  <a href="#what-is-this">What is this</a> &bull;
-  <a href="#why-no-front-end">Why no front end</a> &bull;
-  <a href="#quick-start">Quick start</a> &bull;
-  <a href="#the-commands">Commands</a> &bull;
-  <a href="#instead-of-artifax">Instead of Artifax</a> &bull;
-  <a href="#want-it-installed-and-run-for-you">Installed for you</a> &bull;
-  <a href="#license">License</a>
-</p>
+The weekly programming desk around an arts season: repertoire decisions, rehearsal and performance calls, clashes, rights follow-up, credits and working papers. Artifax's [current pricing page](https://artifax.com/pricing/) asks for a tailored quote. Its supplier-authored [May 2024 procurement schedule](https://assets.applytosupply.digitalmarketplace.service.gov.uk/g-cloud-14/documents/93351/510593779877176-pricing-document-2024-05-07-0958.pdf) lists Tier 6 at GBP 22,760 a year excluding VAT. That is a historical benchmark, not a current quote or a verified customer invoice.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Node-20+-339933?style=flat-square" alt="Node 20+" />
-  <img src="https://img.shields.io/badge/PostgreSQL-any-336791?style=flat-square" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/PGlite-embedded-3ecf8e?style=flat-square" alt="PGlite" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" alt="MIT License" />
-</p>
-
----
-
-## What is this
-
-Arts Programming for Claude Code does the job you pay Artifax for, as a Postgres database and a set of agent commands. There is no web front end. You open the folder in [Claude Code](https://claude.com/claude-code) (or Codex, OpenCode, Cursor: see `AGENTS.md`) and ask for what you want in plain language. It runs the right query, and it can answer questions the Artifax dashboard cannot.
-
-<!-- TODO(author): the annual bill. One sentence: what a 10 to 50 person business typically pays Artifax per year, all in, with a source. -->
-
-Want the same thing with a web front end, or built on a different stack? That is a customisation, and it is exactly what Enterprise DNA does: [book a call](https://enterprisedna.co/omni/book/?utm_source=github&utm_medium=readme&utm_campaign=artifax).
-
-<!-- TODO(author): two or three sentences on what this specific product covers and who it is for. -->
-
-## Why no front end
-
-- The front end was only ever there because the database was hard to talk to. That is no longer true.
-- Your data sits in plain Postgres tables you own. Any tool can read them. No export, no lock-in.
-- No seats, no tiers, no add-ons. Read [docs/why-no-front-end.md](docs/why-no-front-end.md) for the honest trade-offs too.
+The base has no ticket sales, payments, email sending, licence issuance, public calendar or multi-user sign-in service. It is independent of Artifax and is not a feature-for-feature reproduction. Review [the switching guide](docs/replace-artifax.md) for what carries across.
 
 ## Quick start
 
-Sixty seconds, no database install (an embedded Postgres runs inside Node):
+Node 22.13 or later. No server or account is required for the embedded demo.
 
 ```bash
 git clone https://github.com/Enterprise-DNA-OS/arts-programming-for-claude-code.git
 cd arts-programming-for-claude-code
 npm install
+npm test
 npm run demo
+npm run arts -- season-review
+npm run arts -- clashes
+npm run arts -- rights-due
+npm run view
+npm run docs
 ```
 
-Then open the folder in Claude Code and type a slash command. <!-- TODO(author): name the first command to try. -->
+All demo records are fictional. The demo deliberately includes overlapping calls, short turnaround, missing credits, expired rights, overdue actions and missing safety reviews. Seed is idempotent. Never seed a working database. Shared seed requires --demo-database explicitly.
 
-### Use it with your own Postgres or Supabase
+Without DATABASE_URL, PGlite stores data under .data/db (or DATA_DIR). With DATABASE_URL, the same migrations run on Postgres 16 or newer. A trusted database operator owns access. Row security is enabled and public access revoked; set up controlled roles and backups before shared use. Named actors are audit labels, not authenticated identities.
 
-Copy `.env.example` to `.env`, set `DATABASE_URL`, then `npm run migrate`. Same commands, shared data, no per-seat fee.
+## Five weekly rituals
 
-## The commands
+- /season-review brings programming decisions, rights gaps and open actions together.
+- /rehearsal-call lists every active call with explicit UTC timestamps.
+- /clashes finds space overlaps and insufficient turnaround.
+- /rights-due joins performances to the latest evidence for each programme work.
+- /weekly-review writes the season review, rights follow-up, clashes and actions into a branded draft.
 
-<!-- TODO(author): a table of the slash commands in .claude/commands and what each one does. -->
+The single CLI is npm run arts -- help. [Full syntax](docs/cli.md). There are 45 slash-command recipes in .claude/commands, including /customise and /new-view. All 43 CLI commands support --json. Partial IDs and case-insensitive names work; ambiguity lists candidates and exits 1. No mutation sends anything.
 
-| Command | What it does |
-|---|---|
-| `/...` | ... |
+## Ten questions to ask
 
-## Instead of Artifax
+These joins and local rules work today. They are not a claim that Artifax cannot build a similar report.
 
-<!-- TODO(author): how to bring data across from Artifax; link docs/replace-artifax.md -->
+1. Which productions combine rights gaps and outstanding actions? season-review
+2. Which rehearsal conflicts with another production's call? clashes
+3. Which calls leave too little time for a changeover? clashes
+4. Which performance falls outside the dates in its rights evidence? rights-due
+5. Which programme credit is still blank? credit-gaps
+6. Which calls changed after the last safety review? safety-gaps
+7. Who owns the largest overdue action list? owner-workload
+8. How many seconds of repertoire are programmed for each production? programme-length
+9. Which works recur across productions? work-history
+10. Who changed a call, and what did it say before? audit
 
-## Architecture
+## Your first hour: ten things to ask for
 
-```
-arts-programming-for-claude-code/
-  CLAUDE.md                 how the operator wants this run (routing table + house rules)
-  AGENTS.md                 the same, for Codex / OpenCode / Cursor / Gemini CLI
-  .claude/commands/         the slash commands
-  scripts/                  the CLI the commands drive
-  scripts/lib/db.mjs        one adapter: DATABASE_URL (pg) or embedded PGlite
-  supabase/migrations/      plain SQL schema
-  supabase/seed.sql         demo data
-  docs/                     the thesis and the migration guide
-```
+1. Put our business name and colours in brand.json.
+2. Run the fictional season review.
+3. Show every rehearsal clash.
+4. Explain the expired rights evidence.
+5. Create our season and spaces.
+6. Set each production's actual timezone.
+7. Inspect and map one real Artifax export.
+8. Dry-run it and reconcile the source counts.
+9. Draft the programme and production brief.
+10. Set up controlled access, backups and a tested restore.
 
-## Built for coding agents
+## Documents, views and custom changes
 
-The database, CLI and command recipes work with Claude Code, Codex, OpenCode or Cursor. Ask your coding agent for a new command and have it implement and test the change against the same records.
+Change brand.json once. npm run view writes two read-only dashboards. npm run docs writes three kinds of working paper per production: production brief, programme credits and safety handover. /draft-programme and /draft-call write to drafts. Dates are explicit and call times are UTC. All report text is escaped. Read [why no front end](docs/why-no-front-end.md).
 
-## Contributing
+/customise writes a new migration and updates commands and reports. /new-view adds a read-only question to views.json. The agent handles the work; no second runtime-specific implementation is needed.
 
-Issues and pull requests are welcome. Keep the shape: plain SQL, a small CLI, a slash command per recurring job, no front end.
+## Import, evidence and ownership
 
-## Want it installed and run for you?
+The mapped Artifax report imports in one command, with a dry-run option. [Import guide](docs/replace-artifax.md). Originals, all source columns, mapping and fingerprint stay in the database. Bad rows roll back the whole file. Identical files skip. Changed existing records require a reviewed revision. Imported labels never become approved rights evidence.
 
-Enterprise DNA installs Arts Programming for Claude Code for your business, migrates your Artifax data, connects it to the rest of your tools, and runs it for you as part of **Omni**, our managed Command Center. One setup fee, then a monthly retainer.
+Clearance decisions and safety reviews are append-only through the application. The newest clearance supersedes the earlier decision; a revised programme invalidates its previous evidence. Session changes invalidate their safety review. Changes retain old and new values with the named operator. A database owner can alter database controls, so this is not tamper-proof.
 
-- Book a call: [enterprisedna.co/omni/book](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_medium=readme&utm_campaign=artifax)
-- Read more: [enterprisedna.co/omni/instead-of/artifax](https://enterprisedna.co/omni/instead-of/artifax?utm_source=github&utm_medium=readme&utm_campaign=artifax)
+[Compliance rules and sources](docs/compliance.md). Clean checks mean the recorded fields pass the local rules. They do not license a performance, certify safety or replace professional review. The explicit production timezone controls calendar-date checks. Each imported timestamp needs an offset, including across daylight-saving changes.
 
-## License
+Export writes twelve collections and a count manifest to a new private folder, including original imports and audit history. It is a portable archive, not a restoration command. Back up and restore the full database separately. Keep exports, originals and credentials out of Git.
 
-MIT. Copyright (c) 2026 Enterprise DNA.
+## Validation
+
+npm test creates a temporary database, clears inherited DATABASE_URL unless ARTS_TEST_POSTGRES_URL deliberately names a disposable test store, migrates twice, seeds twice and exercises every command. Checks cover rights revocation and revision, date boundaries, invalid input, import dry runs and rollback, original bytes, overlaps, stale reviews, ambiguous matches, HTML escaping, exported counts and generated documents. The manual CI workflow runs on Windows and Linux and also checks PostgreSQL.
+
+## Installed for you
+
+Enterprise DNA maps your Artifax exports, adapts the programme office to your rules and runs it through Omni by Enterprise DNA. One setup fee, then a retainer. [Book Sam's 30-minute call](https://enterprisedna.co/omni/book/?offer=replace-software&utm_source=github&utm_campaign=artifax).
+
+MIT. Copyright 2026 Enterprise DNA.

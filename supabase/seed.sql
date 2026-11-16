@@ -1,0 +1,21 @@
+select set_config('app.actor','fictional-demo',true);
+do $$ declare se uuid; p uuid; p2 uuid; w uuid; w2 uuid; sp uuid; ss uuid; item uuid; begin
+ if exists(select 1 from seasons where code='DEMO-SEASON') then return; end if;
+ if exists(select 1 from seasons) then raise exception 'Seed requires an empty demo database'; end if;
+ insert into seasons(code,name,starts_on,ends_on) values('DEMO-SEASON','Harbour Arts season',current_date-60,current_date+300) returning id into se;
+ insert into productions(code,name,season_id,owner,territory,timezone,rights_context,review_due,status) values('TIDE','The Returning Tide',se,'Mara Chen','NZ','Pacific/Auckland','dramatic',current_date-7,'confirmed') returning id into p;
+ insert into productions(code,name,season_id,owner,territory,timezone,rights_context,review_due) values('WINTER','Winter Chamber Evening',se,'Leo Singh','NZ','Pacific/Auckland','unknown',current_date+10) returning id into p2;
+ insert into works(code,name,creator,duration_seconds) values('W-TIDE','Tide Song','Fictional composer A',240) returning id into w;
+ insert into works(code,name,creator,duration_seconds) values('W-HOME','Homeward','Fictional composer B',360) returning id into w2;
+ insert into programme_items(code,production_id,work_id,position,credit) values('TIDE-01',p,w,1,'Music by Fictional composer A') returning id into item;
+ insert into clearances(programme_item_id,item_revision,production_territory,production_context,decision,valid_from,valid_to,authority,evidence,actor) values(item,1,'NZ','dramatic','approved',current_date-20,current_date-1,'Fictional publisher','Demo expired licence','fictional-demo');
+ insert into programme_items(code,production_id,work_id,position,credit) values('TIDE-02',p,w2,2,'');
+ insert into spaces(code,name,capacity,turnaround_minutes) values('STUDIO','Harbour Studio',80,30) returning id into sp;
+ insert into sessions(code,production_id,space_id,kind,starts_at,ends_at,planned_people,status) values('TIDE-REH',p,sp,'rehearsal',current_date+3+time '02:00',current_date+3+time '04:00',20,'confirmed') returning id into ss;
+ insert into safety_reviews(session_id,session_revision,evidence,consulted_with,actor) values(ss,1,'Demo rehearsal risk assessment','Stage crew and venue manager','fictional-demo');
+ insert into sessions(code,production_id,space_id,kind,starts_at,ends_at,planned_people,status) values('TIDE-SHOW',p,sp,'performance',current_date+7+time '06:00',current_date+7+time '08:00',90,'confirmed');
+ insert into sessions(code,production_id,space_id,kind,starts_at,ends_at,planned_people) values('WINTER-REH',p2,sp,'rehearsal',current_date+3+time '03:30',current_date+3+time '05:00',12);
+ insert into sessions(code,production_id,space_id,kind,starts_at,ends_at,planned_people) values('WINTER-IN',p2,sp,'get-in',current_date+7+time '08:15',current_date+7+time '09:00',6);
+ insert into actions(code,production_id,description,owner,due) values('A-RIGHTS',p,'Obtain current rights evidence','Mara Chen',current_date-4),('A-RIDER',p,'Confirm lighting rider with touring crew','Leo Singh',current_date+2),('A-CREDITS',p,'Confirm published programme credits','Mara Chen',current_date-1);
+ insert into notes(production_id,body,actor) values(p,'All people, productions and permissions in this demo are fictional.','fictional-demo');
+end $$;

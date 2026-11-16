@@ -1,0 +1,10 @@
+{
+  "code": "Event ID",
+  "production": "Production Code",
+  "space": "Space Code",
+  "kind": "Event Type",
+  "starts": "Start",
+  "ends": "End",
+  "people": "People",
+  "status": "Status"
+}
